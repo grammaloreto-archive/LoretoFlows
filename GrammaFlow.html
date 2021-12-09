@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Gramma loreto Flow</title>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+      }
+    </style>
+    <script src="https://unpkg.com/d3@7.1.1/dist/d3.min.js"></script>
+  </head>
+  <body>
+    <svg width="1369" height="650"></svg>
+    <script>
+      const svg = d3
+        .select('svg')
+        .style('background-color', 'yellow');
+      const width = svg.attr('width');
+      const height = svg.attr('height');
+      const n = 40;
+
+      const circles = svg
+        .selectAll('circle')
+        .data(d3.range(n))
+        .enter()
+        .append('circle')
+        .attr('cx', (d) => ((d + 0.5) * width) / n)
+        .attr('r', width / n / 2)
+        .attr('fill', 'purple');
+
+      d3.timer((time) => {
+        circles.attr(
+          'cy',
+          (d) =>
+            (Math.sin(d / 5 + time / 1000) * height) / 4 +
+            height / 2
+        );
+      });
+    </script>
+
+  </body>
+</html>
