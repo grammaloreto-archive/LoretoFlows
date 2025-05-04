@@ -5,39 +5,65 @@
     <style>
       body {
         margin: 0;
+        padding: 0;
         overflow: hidden;
+        width: 100vw;
+        height: 100vh;
+      }
+      svg {
+        width: 100%;
+        height: 100%;
+        display: block;
       }
     </style>
     <script src="https://unpkg.com/d3@7.1.1/dist/d3.min.js"></script>
   </head>
   <body>
-    <svg width="1369" height="650"></svg>
+    <svg></svg>
     <script>
       const svg = d3
         .select('svg')
         .style('background-color', 'yellow');
-      const width = svg.attr('width');
-      const height = svg.attr('height');
-      const n = 40;
-
-      const circles = svg
-        .selectAll('circle')
-        .data(d3.range(n))
-        .enter()
-        .append('circle')
-        .attr('cx', (d) => ((d + 0.5) * width) / n)
-        .attr('r', width / n / 2)
-        .attr('fill', 'purple');
-
-      d3.timer((time) => {
-        circles.attr(
-          'cy',
-          (d) =>
-            (Math.sin(d / 5 + time / 1000) * height) / 4 +
-            height / 2
-        );
+      
+      // Obtener dimensiones de la ventana
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      
+      // Actualizar dimensiones cuando cambie el tamaño de la ventana
+      window.addEventListener('resize', () => {
+        const newWidth = window.innerWidth;
+        const newHeight = window.innerHeight;
+        updateVisualization(newWidth, newHeight);
       });
-    </script>
 
+      function updateVisualization(width, height) {
+        const n = 40;
+        
+        // Limpiar círculos existentes
+        svg.selectAll('circle').remove();
+        
+        // Crear nuevos círculos
+        const circles = svg
+          .selectAll('circle')
+          .data(d3.range(n))
+          .enter()
+          .append('circle')
+          .attr('cx', (d) => ((d + 0.5) * width) / n)
+          .attr('r', width / n / 2)
+          .attr('fill', 'purple');
+
+        d3.timer((time) => {
+          circles.attr(
+            'cy',
+            (d) =>
+              (Math.sin(d / 5 + time / 1000) * height) / 4 +
+              height / 2
+          );
+        });
+      }
+
+      // Inicializar con las dimensiones actuales
+      updateVisualization(width, height);
+    </script>
   </body>
 </html>

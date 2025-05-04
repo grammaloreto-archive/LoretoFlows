@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>New Gramma Flows</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        width: 100vw;
+        height: 100vh;
+        background: #000;
+      }
+      svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+    </style>
+    <script src="https://unpkg.com/d3@7.1.1/dist/d3.min.js"></script>
+  </head>
+  <body>
+    <svg></svg>
+    <script>
+      const svg = d3.select('svg');
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      
+      // Configuración de la visualización
+      const numColumns = 10; // Número de columnas
+      const elementsPerColumn = 8; // Elementos por columna
+      const numElements = numColumns * elementsPerColumn;
+      const speed = 0.001;
+      
+      // Función para generar colores aleatorios
+      const getRandomColor = () => {
+        const hue = Math.random() * 360;
+        return `hsl(${hue}, 70%, 50%)`;
+      };
+
+      // Crear elementos rectangulares
+      const rectangles = svg
+        .selectAll('rect')
+        .data(d3.range(numElements))
+        .enter()
+        .append('rect')
+        .attr('width', width / numColumns - 10) // Ancho de columna con margen
+        .attr('height', 25)
+        .attr('x', (d) => {
+          const column = d % numColumns;
+          return column * (width / numColumns) + 5; // Margen entre columnas
+        })
+        .attr('fill', getRandomColor)
+        .attr('rx', 8)
+        .attr('ry', 8);
+
+      // Animación
+      d3.timer((time) => {
+        rectangles
+          .attr('y', (d) => {
+            const column = d % numColumns;
+            const row = Math.floor(d / numColumns);
+            const offset = row * 35; // Espaciado vertical
+            // Cada columna tiene un desfase diferente
+            return Math.sin(time * speed + column * 0.2) * (height / 6) + offset;
+          })
+          .attr('fill', (d) => {
+            const column = d % numColumns;
+            const hue = (time * speed * 20 + column * 30) % 360;
+            return `hsl(${hue}, 80%, 60%)`;
+          })
+          .attr('width', (d) => {
+            const column = d % numColumns;
+            const scale = Math.sin(time * speed + column * 0.1) * 0.2 + 0.8;
+            return (width / numColumns - 10) * scale;
+          });
+      });
+
+      // Actualizar dimensiones cuando cambie el tamaño de la ventana
+      window.addEventListener('resize', () => {
+        const newWidth = window.innerWidth;
+        const newHeight = window.innerHeight;
+        
+        rectangles
+          .attr('width', newWidth / numColumns - 10)
+          .attr('x', (d) => {
+            const column = d % numColumns;
+            return column * (newWidth / numColumns) + 5;
+          });
+      });
+    </script>
+  </body>
+</html> 

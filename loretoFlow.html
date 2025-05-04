@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Loreto Flow - Pez Animado</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        width: 100vw;
+        height: 100vh;
+        background: #1a1a1a;
+      }
+      svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+    </style>
+    <script src="https://unpkg.com/d3@7.1.1/dist/d3.min.js"></script>
+  </head>
+  <body>
+    <svg></svg>
+    <script>
+      const svg = d3.select('svg');
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+
+      // Añadir fondo azul claro
+      svg.append('rect')
+        .attr('width', width)
+        .attr('height', height)
+        .attr('fill', '#4a90e2');
+
+      // Configuración del pez
+      const fishConfig = {
+        numFish: 5,
+        speed: 0.0005,
+        scale: 25
+      };
+
+      // Función para crear la forma del pez más detallada
+      function createFishPath() {
+        return d3.line()
+          .x(d => d.x)
+          .y(d => d.y)
+          .curve(d3.curveBasis)([
+            // Cola
+            {x: -4, y: 0},      // Punto inicial de la cola
+            {x: -3.5, y: -1},   // Curva superior de la cola
+            {x: -3, y: -1.5},   // Punto superior de la cola
+            {x: -2.5, y: -1},   // Curva superior de la cola
+            // Cuerpo superior
+            {x: -2, y: -0.8},   // Inicio del cuerpo superior
+            {x: -1.5, y: -1.2}, // Curva del cuerpo
+            {x: -1, y: -1.5},   // Punto más alto del cuerpo
+            {x: -0.5, y: -1.2}, // Curva hacia la cabeza
+            // Cabeza
+            {x: 0, y: -0.8},    // Cabeza superior
+            {x: 0.5, y: -0.4},  // Curva del hocico
+            {x: 1, y: 0},       // Pico
+            // Cabeza inferior
+            {x: 0.5, y: 0.4},   // Curva del hocico inferior
+            {x: 0, y: 0.8},     // Cabeza inferior
+            // Cuerpo inferior
+            {x: -0.5, y: 1.2},  // Curva hacia el cuerpo
+            {x: -1, y: 1.5},    // Punto más bajo del cuerpo
+            {x: -1.5, y: 1.2},  // Curva del cuerpo
+            {x: -2, y: 0.8},    // Fin del cuerpo inferior
+            // Cola inferior
+            {x: -2.5, y: 1},    // Curva inferior de la cola
+            {x: -3, y: 1.5},    // Punto inferior de la cola
+            {x: -3.5, y: 1},    // Curva inferior de la cola
+            {x: -4, y: 0}       // Vuelve al punto inicial
+          ]);
+      }
+
+      // Crear grupo para cada pez
+      const fishGroups = svg
+        .selectAll('g.fish')
+        .data(d3.range(fishConfig.numFish))
+        .enter()
+        .append('g')
+        .attr('class', 'fish')
+        .attr('transform', (d, i) => {
+          const x = (i + 1) * (width / (fishConfig.numFish + 1));
+          const y = height / 2;
+          return `translate(${x}, ${y})`;
+        });
+
+      // Añadir el cuerpo del pez
+      fishGroups.append('path')
+        .attr('d', createFishPath())
+        .attr('fill', (d, i) => i % 2 === 0 ? '#FFD700' : '#9370DB')
+        .attr('stroke', '#fff')
+        .attr('stroke-width', 0.3);
+
+      // Añadir el ojo
+      fishGroups.append('circle')
+        .attr('r', 0.3)
+        .attr('cx', 0.3)
+        .attr('cy', -0.3)
+        .attr('fill', '#fff');
+
+      // Añadir la pupila
+      fishGroups.append('circle')
+        .attr('r', 0.1)
+        .attr('cx', 0.3)
+        .attr('cy', -0.3)
+        .attr('fill', '#000');
+
+      // Añadir aletas
+      fishGroups.append('path')
+        .attr('d', d3.line()
+          .x(d => d.x)
+          .y(d => d.y)
+          .curve(d3.curveBasis)([
+            {x: -1, y: -1.5},
+            {x: -1.2, y: -2},
+            {x: -1, y: -2.2},
+            {x: -0.8, y: -2},
+            {x: -1, y: -1.5}
+          ]))
+        .attr('fill', (d, i) => i % 2 === 0 ? '#FFD700' : '#9370DB')
+        .attr('stroke', '#fff')
+        .attr('stroke-width', 0.2);
+
+      // Animación
+      d3.timer((time) => {
+        // Animar peces
+        fishGroups.attr('transform', (d, i) => {
+          const x = ((i + 1) * (width / (fishConfig.numFish + 1)) + 
+                    Math.sin(time * fishConfig.speed + i) * 100) % width;
+          const y = height / 2 + 
+                    Math.sin(time * fishConfig.speed * 2 + i) * 50;
+          const rotation = Math.sin(time * fishConfig.speed + i) * 15;
+          return `translate(${x}, ${y}) rotate(${rotation}) scale(${fishConfig.scale})`;
+        });
+      });
+
+      // Actualizar dimensiones cuando cambie el tamaño de la ventana
+      window.addEventListener('resize', () => {
+        const newWidth = window.innerWidth;
+        const newHeight = window.innerHeight;
+        
+        // Actualizar fondo
+        svg.select('rect')
+          .attr('width', newWidth)
+          .attr('height', newHeight);
+        
+        // Actualizar peces
+        fishGroups.attr('transform', (d, i) => {
+          const x = (i + 1) * (newWidth / (fishConfig.numFish + 1));
+          const y = newHeight / 2;
+          return `translate(${x}, ${y})`;
+        });
+      });
+    </script>
+  </body>
+</html> 
