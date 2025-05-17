@@ -1,7 +1,7 @@
 # LoretoFlows
 
 Gramma loretos flow:
-https://grammaloreto.github.io/LoretoFlows/GrammaFlow.html
-https://grammaloreto.github.io/LoretoFlows/newGrammaFlows.html
-https://grammaloreto.github.io/LoretoFlows/loretoFlow.html
+https://grammaloreto-archive.github.io/LoretoFlows/GrammaFlow.html
+https://grammaloreto-archive.github.io/LoretoFlows/newGrammaFlows.html
+https://grammaloreto-archive.github.io/LoretoFlows/loretoFlow.html
 
